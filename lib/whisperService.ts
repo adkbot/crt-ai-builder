@@ -1,19 +1,18 @@
 import OpenAI from 'openai';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import ytdl from '@distube/ytdl-core';
+import { Readable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-
-const execAsync = promisify(exec);
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || ''
 });
 
 /**
- * Transcreve áudio de vídeo do YouTube usando yt-dlp + OpenAI Whisper
+ * Transcreve áudio de vídeo do YouTube usando ytdl-core + OpenAI Whisper
  * Funciona com QUALQUER vídeo, mesmo sem legendas!
+ * COMPATÍVEL COM VERCEL (serverless)
  * @param videoUrl - URL do YouTube
  * @returns Transcrição completa do áudio
  */
@@ -21,10 +20,10 @@ export async function transcribeWithWhisper(videoUrl: string): Promise<string> {
     let audioPath: string | null = null;
 
     try {
-        console.log('🎵 Baixando áudio com yt-dlp...');
+        console.log('🎵 Baixando áudio com ytdl-core...');
 
-        // Baixar áudio usando yt-dlp (muito mais confiável!)
-        audioPath = await downloadAudioWithYtDlp(videoUrl);
+        // Baixar áudio usando ytdl-core (compatível com serverless!)
+        audioPath = await downloadAudioWithYtdl(videoUrl);
 
         console.log('🤖 Transcrevendo com Whisper...');
 
@@ -59,74 +58,53 @@ export async function transcribeWithWhisper(videoUrl: string): Promise<string> {
 }
 
 /**
- * Baixa áudio do YouTube usando yt-dlp (CLI tool)
- * Muito mais confiável que bibliotecas Node.js!
+ * Baixa áudio do YouTube usando ytdl-core (biblioteca Node.js)
+ * Compatível com ambientes serverless como Vercel!
  */
-async function downloadAudioWithYtDlp(videoUrl: string): Promise<string> {
+async function downloadAudioWithYtdl(videoUrl: string): Promise<string> {
     const timestamp = Date.now();
     const audioPath = path.join(os.tmpdir(), `yt-audio-${timestamp}.mp3`);
 
     console.log('📥 Baixando de:', videoUrl);
     console.log('💾 Salvando em:', audioPath);
 
-    try {
-        // Possíveis locais do ffmpeg (instalado pelo winget)
-        const ffmpegLocations = [
-            path.join(process.env.LOCALAPPDATA || '', 'Microsoft', 'WinGet', 'Packages', 'yt-dlp.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe', 'ffmpeg-N-122319-gf6a95c7eb7-win64-gpl', 'bin'),
-            'C:\\ProgramData\\chocolatey\\bin', // Se instalado via chocolatey
-            'C:\\ffmpeg\\bin' // Instalação manual comum
-        ];
+    return new Promise((resolve, reject) => {
+        try {
+            // Obter stream de áudio (melhor qualidade possível)
+            const audioStream = ytdl(videoUrl, {
+                quality: 'highestaudio',
+                filter: 'audioonly'
+            });
 
-        let ffmpegPath = '';
-        for (const loc of ffmpegLocations) {
-            if (fs.existsSync(path.join(loc, 'ffmpeg.exe'))) {
-                ffmpegPath = loc;
-                console.log(`✅ FFmpeg encontrado em: ${ffmpegPath}`);
-                break;
-            }
+            const writeStream = fs.createWriteStream(audioPath);
+
+            // Pipeline: stream do YouTube -> arquivo local
+            audioStream.pipe(writeStream);
+
+            audioStream.on('error', (error) => {
+                console.error('❌ Erro no stream de áudio:', error);
+                reject(new Error(`Falha ao baixar áudio: ${error.message}`));
+            });
+
+            writeStream.on('error', (error) => {
+                console.error('❌ Erro ao escrever arquivo:', error);
+                reject(new Error(`Falha ao salvar áudio: ${error.message}`));
+            });
+
+            writeStream.on('finish', () => {
+                console.log(`✅ Áudio baixado: ${path.basename(audioPath)}`);
+
+                // Verificar se arquivo existe e tem conteúdo
+                if (fs.existsSync(audioPath) && fs.statSync(audioPath).size > 0) {
+                    resolve(audioPath);
+                } else {
+                    reject(new Error('Arquivo de áudio vazio ou não encontrado'));
+                }
+            });
+
+        } catch (error: any) {
+            console.error('Erro ao baixar áudio:', error.message);
+            reject(new Error(`Falha ao baixar áudio: ${error.message}`));
         }
-
-        // Comando yt-dlp
-        let command = 'yt-dlp';
-        command += ' --extractor-args "youtube:player_client=default"'; // Evita warning
-        command += ' -x --audio-format mp3 --audio-quality 9';
-
-        if (ffmpegPath) {
-            command += ` --ffmpeg-location "${ffmpegPath}"`;
-        }
-
-        command += ` -o "${audioPath}" "${videoUrl}"`;
-
-        console.log('⚙️  Executando yt-dlp...');
-
-        const { stdout, stderr } = await execAsync(command, {
-            maxBuffer: 10 * 1024 * 1024, // 10MB buffer
-            timeout: 120000 // 2 minutos timeout
-        });
-
-        if (stderr && !stderr.includes('Deleting original file')) {
-            console.log('⚠️  yt-dlp stderr:', stderr.substring(0, 500));
-        }
-
-        // yt-dlp pode adicionar extensão, verificar
-        const possiblePaths = [
-            audioPath,
-            audioPath.replace('.mp3', '.m4a'),
-            audioPath.replace('.mp3', '.webm'),
-            audioPath.replace('.mp3', '.opus')
-        ];
-
-        for (const p of possiblePaths) {
-            if (fs.existsSync(p)) {
-                console.log(`✅ Áudio encontrado: ${path.basename(p)}`);
-                return p;
-            }
-        }
-
-        throw new Error('Arquivo de áudio não encontrado após download');
-
-    } catch (error: any) {
-        console.error('Erro ao executar yt-dlp:', error.message);
-        throw new Error(`Falha ao baixar áudio: ${error.message}`);
-    }
+    });
 }
