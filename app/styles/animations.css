@@ -1,0 +1,397 @@
+/* ===== LOADING ANIMATIONS ===== */
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 20px 0;
+}
+
+.animation-wrapper {
+    width: 180px;
+    height: 180px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.loading-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #6ba3ff;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: #2f6bff;
+    border-radius: 50%;
+    animation: dotPulse 1.4s infinite ease-in-out;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+
+    0%,
+    60%,
+    100% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: scale(1.4);
+        opacity: 1;
+    }
+}
+
+/* ===== ANALYZING ANIMATION ===== */
+
+.analyzing-animation {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brain-icon {
+    font-size: 72px;
+    animation: brainPulse 2s infinite;
+    filter: drop-shadow(0 0 20px rgba(47, 107, 255, 0.6));
+}
+
+@keyframes brainPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.scan-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #2f6bff, transparent);
+    animation: scan 2s infinite;
+}
+
+.scan-line:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.scan-line:nth-child(2) {
+    animation-delay: 0.6s;
+}
+
+.scan-line:nth-child(3) {
+    animation-delay: 1.2s;
+}
+
+@keyframes scan {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #6ba3ff;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    animation: particleOrbit 3s infinite linear;
+    animation-delay: var(--delay);
+    transform-origin: 0 0;
+}
+
+@keyframes particleOrbit {
+    0% {
+        transform: rotate(var(--angle)) translateX(60px) scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+        transform: rotate(var(--angle)) translateX(80px) scale(1);
+    }
+
+    100% {
+        transform: rotate(var(--angle)) translateX(100px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ===== TRAINING ANIMATION ===== */
+
+.training-animation {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.neural-network {
+    display: flex;
+    gap: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.layer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+}
+
+.neuron {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #2f6bff, #6ba3ff);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(47, 107, 255, 0.8);
+    animation: neuronPulse 1.5s infinite;
+}
+
+.layer:nth-child(1) .neuron {
+    animation-delay: 0s;
+}
+
+.layer:nth-child(2) .neuron {
+    animation-delay: 0.3s;
+}
+
+.layer:nth-child(3) .neuron {
+    animation-delay: 0.6s;
+}
+
+@keyframes neuronPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(47, 107, 255, 0.6);
+    }
+
+    50% {
+        transform: scale(1.3);
+        box-shadow: 0 0 30px rgba(47, 107, 255, 1);
+    }
+}
+
+.training-pulse {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border: 3px solid #2f6bff;
+    border-radius: 50%;
+    animation: pulsate 2s infinite;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ===== SUCCESS ANIMATION ===== */
+
+.success-animation {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkmark-circle {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0) rotate(-180deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.checkmark {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.checkmark-circle-bg {
+    stroke: #22c55e;
+    stroke-width: 3;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    animation-delay: 0.2s;
+}
+
+.checkmark-check {
+    stroke: #22c55e;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    animation-delay: 0.6s;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-sparks {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.spark {
+    position: absolute;
+    width: 3px;
+    height: 12px;
+    background: linear-gradient(180deg, #22c55e, transparent);
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    animation: sparkFly 0.8s ease-out;
+    animation-delay: 0.8s;
+    opacity: 0;
+}
+
+@keyframes sparkFly {
+    0% {
+        transform: rotate(var(--spark-angle)) translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(var(--spark-angle)) translateY(-60px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ===== PROCESSING ANIMATION ===== */
+
+.processing-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.spinner-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid transparent;
+    border-top-color: #2f6bff;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+}
+
+.spinner-ring:nth-child(2) {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border-top-color: #6ba3ff;
+    animation-delay: -0.5s;
+}
+
+.spinner-ring:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    border-top-color: #9dc5ff;
+    animation-delay: -1s;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
