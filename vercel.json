@@ -1,0 +1,24 @@
+{
+    "buildCommand": "npm run build",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "outputDirectory": ".next",
+    "env": {
+        "OPENAI_API_KEY": {
+            "description": "OpenAI API Key para GPT-4",
+            "required": true
+        },
+        "NEXT_PUBLIC_APP_URL": {
+            "description": "URL pública do app",
+            "value": "https://crt-ai-builder.vercel.app"
+        }
+    },
+    "regions": [
+        "gru1"
+    ],
+    "functions": {
+        "app/api/**/*.ts": {
+            "maxDuration": 300
+        }
+    }
+}
