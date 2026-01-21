@@ -18,7 +18,8 @@ input int InpSL_Pips = 30;
 input double InpRR = 2.0;
 
 // === Q-LEARNING ===
-input bool InpQL_Enable = true;
+// === Q-LEARNING (SEMPRE ATIVO - NÃO DESABILITAR!) ===
+const bool InpQL_Enable = true;  // ⚠️ OBRIGATÓRIO! Sistema depende da IA
 input double InpQL_Alpha = 0.1;
 input double InpQL_Gamma = 0.95;
 input double InpQL_Epsilon = 0.2;

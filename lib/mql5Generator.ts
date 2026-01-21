@@ -3,6 +3,8 @@
  * Baseado em Grace FX (D1 -> H1 -> M5)
  */
 
+import { validateBeforeBuild } from './nodeValidator';
+
 interface StrategyNode {
     id: string;
     type: string;
@@ -19,6 +21,7 @@ interface GeneratedCode {
     mql5: string;
     description: string;
     parameters: any;
+    warnings?: string[];
 }
 
 /**
@@ -29,6 +32,13 @@ export function generateMQL5Code(
     edges: StrategyEdge[],
     strategyName: string
 ): GeneratedCode {
+
+    // 🔒 VALIDAÇÃO OBRIGATÓRIA - Previne mistura de metodologias
+    const validation = validateBeforeBuild(nodes);
+
+    if (!validation.valid) {
+        throw new Error(validation.error || 'Estratégia inválida');
+    }
 
     // Detectar componentes SMC nos nós
     const hasDailyBias = nodes.some(n => n.type === 'DAILY_BIAS');
@@ -67,7 +77,7 @@ input int InpSL_Pips = 30;
 input double InpRR = 2.0;
 
 // === Q-LEARNING ${hasQAgent ? '(ATIVO)' : '(DESATIVADO)'} ===
-input bool InpQL_Enable = ${hasQAgent ? 'true' : 'false'};
+const bool InpQL_Enable = ${hasQAgent ? 'true' : 'false'};  // ⚠️ OBRIGATÓRIO! Sistema depende da IA
 input double InpQL_Alpha = 0.1;
 input double InpQL_Gamma = 0.95;
 input double InpQL_Epsilon = 0.2;
@@ -591,6 +601,7 @@ void OnTick() {
             endHour,
             fibPremium,
             fibDiscount
-        }
+        },
+        warnings: validation.warnings  // ✅ Avisos da validação
     };
 }

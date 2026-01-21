@@ -24,7 +24,8 @@ input double InpFib50 = 0.50;
 input double InpFib618 = 0.618;
 input double InpFib382 = 0.382;
 
-input bool InpQL_Enable = true;
+// === Q-LEARNING (SEMPRE ATIVO - NÃO DESABILITAR!) ===
+const bool InpQL_Enable = true;  // ⚠️ OBRIGATÓRIO! Sistema depende da IA
 input double InpQL_Alpha = 0.1;
 input double InpQL_Gamma = 0.95;
 input double InpQL_Epsilon = 0.2;

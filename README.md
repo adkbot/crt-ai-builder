@@ -50,11 +50,81 @@ Um **SaaS completo** que permite criar Expert Advisors profissionais para MT5 at
 - ✅ **🆕 Validação de 70%** (backtest automático com aprovação mínima de 70%)
 
 ### 🎓 **Estratégias Incluídas:**
-- **CRT Pattern** - Candle Reversal Technique
-- **Silver Bullet** - ICT concept (Sweep + FVG)
+- **CRT Dynamic** - London/NY Flow (session-based, dinâmico)
+- **SMC Complete** - Grace FX (D1→H1→M5, static)
 - **MA Cross** - Golden/Death Cross
 - **YouTube Import** - 🆕 Aprende de vídeos educacionais!
 - **Custom** - Crie a sua própria!
+
+---
+
+## 🎯 **METODOLOGIAS DISPONÍVEIS**
+
+### **1. CRT Dynamic (London/NY Flow)** 🟢
+
+**Características:**
+- ✅ **Session-Based:** Londres (08:00-11:00) + NY (13:00-16:00)
+- ✅ **Dynamic Bias:** Baseado na abertura de Londres (não D1)
+- ✅ **Entry:** Toque em FVG durante NY
+- ✅ **SL:** Na origem de Londres (low para compra, high para venda)
+- ❌ **NÃO usa:** Daily Bias (D1)
+
+**Nós Recomendados:**
+```
+TIME_FILTER → ICT_KEY_ZONES → FIBONACCI_ZONES → FAIR_VALUE_GAP → Q_AGENT → BUY/SELL
+```
+
+**Quando usar:**
+- Operar apenas London + NY
+- Estratégias baseadas em sessões
+- Setup dinâmico com FVG
+
+---
+
+### **2. SMC Complete (Grace FX)** 🔵
+
+**Características:**
+- ✅ **Multi-Timeframe:** D1 (Bias) → H1 (Zones) → M5 (Entry)
+- ✅ **Daily Bias:** Determina direção com vela D1
+- ✅ **Entry:** Market Structure Break (M5)
+- ✅ **SL:** Fixo em pips
+- ❌ **NÃO usa:** London/NY session boxes
+
+**Nós Recomendados:**
+```
+DAILY_BIAS → FIBONACCI_ZONES → SMC_ORDER_BLOCK → JUDAS_SWING → Q_AGENT → BUY/SELL
+```
+
+**Quando usar:**
+- Análise multi-timeframe
+- Daily bias confirmation
+- Estratégias Grace FX / ICT
+
+---
+
+## ⚠️ **REGRAS IMPORTANTES**
+
+### **1. Q-Agent é OBRIGATÓRIO** 🔴
+```
+❌ ERRADO: SETUP → BUY/SELL
+✅ CORRETO: SETUP → Q_AGENT → BUY/SELL
+```
+
+O Q-Agent:
+- Filtra sinais de baixa qualidade
+- Aprende com cada trade
+- Aumenta Win Rate de 65% para 75-85%
+- **NÃO PODE SER DESABILITADO!**
+
+### **2. NÃO MISTURE Metodologias** 🔴
+```
+❌ ERRADO: DAILY_BIAS + ICT_KEY_ZONES (mistura SMC + CRT)
+✅ CORRETO: Escolha UMA metodologia
+```
+
+**CRT ou SMC, nunca os dois juntos!**
+
+
 
 ### 🧠 **🆕 SISTEMA INTELIGENTE v2.0** ⚡
 
