@@ -1,0 +1,6 @@
+# FORCE VERCEL REBUILD
+# Timestamp: 2026-01-21 08:31
+# Reason: Vercel not deploying new code with transcript support
+# Test Local: ✅ PASSED (Status 200, transcript working)
+
+This file forces Vercel to rebuild everything from scratch.

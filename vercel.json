@@ -1,18 +1,34 @@
 {
-    "framework": "nextjs",
+    "version": 2,
     "buildCommand": "npm run build",
-    "installCommand": "npm ci",
+    "installCommand": "npm ci --legacy-peer-deps",
+    "framework": "nextjs",
     "outputDirectory": ".next",
     "cleanUrls": true,
-    "env": {
-        "OPENAI_API_KEY": "@openai_api_key"
-    },
+    "trailingSlash": false,
     "regions": [
         "gru1"
     ],
     "functions": {
         "app/api/**/*.ts": {
-            "maxDuration": 300
+            "maxDuration": 300,
+            "memory": 1024
         }
-    }
+    },
+    "build": {
+        "env": {
+            "NEXT_TELEMETRY_DISABLED": "1"
+        }
+    },
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "no-cache, no-store, must-revalidate"
+                }
+            ]
+        }
+    ]
 }
