@@ -402,6 +402,48 @@ export default function EditorPage() {
           ➕ Adicionar Mais Vídeos
         </button>
 
+        {/* ✅ CAMPO DE TRANSCRIÇÃO MANUAL - SOLUÇÃO DEFINITIVA */}
+        <div style={{ marginTop: 16, marginBottom: 12, background: "rgba(16, 185, 129, 0.1)", padding: 12, borderRadius: 8, border: "1px solid rgba(16, 185, 129, 0.3)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: "#10b981" }}>
+              📝 OU Cole a Transcrição Manualmente
+            </label>
+            <div className="pill" style={{ fontSize: 10, padding: "2px 8px", background: "#10b981", color: "#fff" }}>
+              Sempre Funciona!
+            </div>
+          </div>
+          <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 8, lineHeight: 1.4 }}>
+            Vídeo sem legendas? Cole a transcrição aqui:
+            <br />
+            <span style={{ fontSize: 10 }}>YouTube → "..." → "Mostrar transcrição" → Copiar e colar</span>
+          </div>
+          <textarea
+            className="input"
+            placeholder="Cole aqui o texto da transcrição do vídeo...
+
+Exemplo: abrir vídeo no YouTube, clicar nos 3 pontinhos (...), selecionar 'Mostrar transcrição', copiar todo o texto e colar aqui.
+
+Esta opção SEMPRE funciona, mesmo quando a extração automática falha!"
+            value={manualTranscript}
+            onChange={(e) => setManualTranscript(e.target.value)}
+            disabled={isAnalyzing}
+            style={{
+              minHeight: "120px",
+              resize: "vertical",
+              fontFamily: "monospace",
+              fontSize: "12px",
+              lineHeight: "1.4",
+              background: "rgba(0, 0, 0, 0.3)",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}
+          />
+          {manualTranscript.length > 0 && (
+            <div style={{ fontSize: 11, opacity: 0.6, marginTop: 4, color: "#10b981" }}>
+              ✅ {manualTranscript.length} caracteres ({Math.ceil(manualTranscript.length / 5)} palavras aprox.)
+            </div>
+          )}
+        </div>
+
         <div style={{ display: "flex", gap: 8 }}>
           <button
             className="btn"
@@ -409,17 +451,18 @@ export default function EditorPage() {
             onClick={analyzeYouTube}
             disabled={isAnalyzing}
           >
-            {isAnalyzing ? "🤖 Analisando vídeo..." : "🎓 Analisar & Gerar Estratégia"}
+            {isAnalyzing ? "🤖 Analisando..." : "🎓 Analisar & Gerar Estratégia"}
           </button>
 
           <button
             className="btn-danger"
             onClick={() => {
               setYoutubeUrl('');
+              setManualTranscript('');
               setAnalysisResult(null);
             }}
             disabled={isAnalyzing}
-            title="Limpar vídeos"
+            title="Limpar tudo"
           >
             🗑️
           </button>
