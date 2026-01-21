@@ -1,15 +1,14 @@
 import { YoutubeTranscript } from 'youtube-transcript';
-import { transcribeWithWhisper } from './whisperService';
 
 /**
- * Extrai transcrição REAL do YouTube
- * Tenta legendas primeiro, se falhar usa Whisper (funciona SEM legendas!)
+ * Extrai transcrição do YouTube usando APENAS legendas
+ * SIMPLIFICADO - Sem Whisper para evitar problemas no Vercel
  * @param videoUrl - URL completa ou ID do vídeo
  * @returns Texto completo da transcrição
  */
 export async function getYouTubeTranscript(videoUrl: string): Promise<string> {
     try {
-        // Extrair ID do vídeo PRIMEIRO
+        // Extrair ID do vídeo
         const videoId = extractVideoId(videoUrl);
 
         if (!videoId) {
@@ -18,42 +17,34 @@ export async function getYouTubeTranscript(videoUrl: string): Promise<string> {
 
         console.log('📹 ID do vídeo extraído:', videoId);
 
-        try {
-            // TENTATIVA 1: Buscar legendas/transcrição (rápido e grátis)
-            console.log('🔍 Tentando obter legendas...');
-            const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+        // Buscar legendas/transcrição
+        console.log('🔍 Buscando legendas do YouTube...');
+        const transcript = await YoutubeTranscript.fetchTranscript(videoId);
 
-            const fullText = transcript
-                .map(item => item.text)
-                .join(' ')
-                .replace(/\[.*?\]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
+        const fullText = transcript
+            .map(item => item.text)
+            .join(' ')
+            .replace(/\[.*?\]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
 
-            if (fullText.length > 100) {
-                console.log(`✅ Legendas encontradas: ${fullText.length} caracteres`);
-                return fullText;
-            }
-
-            throw new Error('Transcrição muito curta');
-
-        } catch (transcriptError: any) {
-            // TENTATIVA 2: Usar Whisper (funciona SEM legendas!)
-            console.log('⚠️  Legendas não disponíveis');
-            console.log('🎵 Usando Whisper para transcrever áudio...');
-
-            const whisperTranscription = await transcribeWithWhisper(videoUrl);
-
-            if (whisperTranscription.length < 100) {
-                throw new Error('Transcrição Whisper muito curta');
-            }
-
-            return whisperTranscription;
+        if (fullText.length < 100) {
+            throw new Error('Transcrição muito curta. Vídeo pode não ter legendas disponíveis.');
         }
+
+        console.log(`✅ Legendas encontradas: ${fullText.length} caracteres`);
+        return fullText;
 
     } catch (error: any) {
         console.error('Erro ao extrair transcrição:', error);
-        throw new Error(`Falha ao extrair transcrição: ${error.message}`);
+
+        // Mensagem mais clara para o usuário
+        if (error.message.includes('Transcript is disabled') ||
+            error.message.includes('No transcript found')) {
+            throw new Error('Este vídeo não possui legendas disponíveis. Por favor, escolha um vídeo com legendas ativadas.');
+        }
+
+        throw new Error(`Falha ao extrair legendas: ${error.message}`);
     }
 }
 
