@@ -1,0 +1,12 @@
+# 🔧 FIX VERCEL - yt-dlp para ytdl-core
+
+## SOLUÇÃO PERMANENTE APLICADA
+
+O sistema foi atualizado para usar `ytdl-core` em vez de `yt-dlp`.
+
+**Data:** 2026-01-20 21:30
+**Status:** ✅ CORRIGIDO
+
+Se ainda aparecer erro de "yt-dlp: command not found", é cache do Vercel.
+
+**Solução:** Fazer novo commit para forçar rebuild limpo.
