@@ -16,6 +16,7 @@ export default function EditorPage() {
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [manualTranscript, setManualTranscript] = useState(""); // ✅ SOLUÇÃO DEFINITIVA
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
 
@@ -92,8 +93,9 @@ export default function EditorPage() {
   };
 
   const analyzeYouTube = async () => {
-    if (!youtubeUrl.trim()) {
-      alert("Por favor, cole a URL do YouTube");
+    // Verificar se tem URL OU transcrição manual
+    if (!youtubeUrl.trim() && !manualTranscript.trim()) {
+      alert("Por favor, cole a URL do YouTube OU a transcrição manual");
       return;
     }
 
@@ -105,13 +107,19 @@ export default function EditorPage() {
       const res = await fetch("/api/analyze-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: youtubeUrl })
+        body: JSON.stringify({
+          url: youtubeUrl,
+          transcript: manualTranscript  // ✅ Enviar transcrição manual
+        })
       });
 
       const result = await res.json();
 
       if (result.error) {
-        alert(`Erro: ${result.error}`);
+        const errorMsg = result.hint
+          ? `${result.error}\n\n💡 ${result.hint}`
+          : result.error;
+        alert(`Erro: ${errorMsg}`);
         setWorkflowState('idle');
         return;
       }

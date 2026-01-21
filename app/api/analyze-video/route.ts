@@ -13,29 +13,61 @@ export const maxDuration = 300; // 5 minutos (Whisper pode demorar)
 export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const url = String(body.url ?? "");
+    const manualTranscript = String(body.transcript ?? "");
 
-    if (!url.trim()) {
-        return NextResponse.json({ error: "URL não fornecida" }, { status: 400 });
-    }
+    // SOLUÇÃO DEFINITIVA: Aceitar transcrição manual OU URL
+    let transcript = "";
+    let source = "";
 
-    // Validar se é URL do YouTube
-    const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
-    if (!isYouTube) {
-        return NextResponse.json({ error: "Por favor, forneça uma URL válida do YouTube" }, { status: 400 });
+    if (manualTranscript.trim()) {
+        // OPÇÃO 1: Transcrição manual (SEMPRE funciona!)
+        console.log('📝 Usando transcrição manual fornecida');
+        transcript = manualTranscript.trim();
+        source = "manual";
+
+        if (transcript.length < 100) {
+            return NextResponse.json({
+                error: "Transcrição muito curta. Por favor, forneça um texto mais completo."
+            }, { status: 400 });
+        }
+
+    } else if (url.trim()) {
+        // OPÇÃO 2: Tentar extrair do YouTube (pode falhar)
+        const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+        if (!isYouTube) {
+            return NextResponse.json({
+                error: "Por favor, forneça uma URL válida do YouTube OU cole a transcrição manualmente"
+            }, { status: 400 });
+        }
+
+        try {
+            console.log('🎬 Tentando extrair transcrição do YouTube:', url);
+            transcript = await getYouTubeTranscript(url);
+            source = "youtube";
+
+            if (!transcript || transcript.length < 100) {
+                return NextResponse.json({
+                    error: "Não foi possível extrair legendas deste vídeo. Por favor, cole a transcrição manualmente.",
+                    hint: "Abra o vídeo no YouTube → Clique em '...' → 'Mostrar transcrição' → Copie e cole aqui"
+                }, { status: 400 });
+            }
+        } catch (error: any) {
+            console.error('Erro ao extrair do YouTube:', error.message);
+            return NextResponse.json({
+                error: "Não foi possível extrair legendas automaticamente.",
+                hint: "Solução: Abra o vídeo no YouTube → '...' → 'Mostrar transcrição' → Copie e cole no campo 'Transcrição Manual'",
+                details: error.message
+            }, { status: 400 });
+        }
+
+    } else {
+        return NextResponse.json({
+            error: "Forneça uma URL do YouTube OU cole a transcrição manualmente"
+        }, { status: 400 });
     }
 
     try {
-        console.log('🎬 Iniciando análise de vídeo:', url);
-
-        // PASSO 1: Extrair transcrição REAL do YouTube
-        console.log('📝 Extraindo transcrição...');
-        const transcript = await getYouTubeTranscript(url);
-
-        if (!transcript || transcript.length < 100) {
-            return NextResponse.json({
-                error: "Transcrição muito curta ou vazia. Vídeo pode não ter legendas."
-            }, { status: 400 });
-        }
+        console.log(`✅ Transcrição obtida (${source}): ${transcript.length} caracteres`);
 
         // PASSO 2: Analisar com GPT-4 para extrair estratégia EXATA
         console.log('🤖 Analisando estratégia com IA...');

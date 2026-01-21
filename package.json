@@ -17,6 +17,7 @@
     "reactflow": "^11.11.4",
     "uuid": "^9.0.1",
     "youtube-transcript": "^1.2.1",
+    "youtubei.js": "^16.0.1",
     "ytdl-core": "^4.11.5",
     "zod": "^3.23.8"
   },
