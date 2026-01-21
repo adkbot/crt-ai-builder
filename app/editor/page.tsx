@@ -16,7 +16,8 @@ export default function EditorPage() {
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [manualTranscript, setManualTranscript] = useState(""); // ✅ SOLUÇÃO DEFINITIVA
+  // ✅ Campo para transcrição manual - SEMPRE funciona!
+  const [manualTranscript, setManualTranscript] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
 
